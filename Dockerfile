@@ -14,6 +14,7 @@ WORKDIR $GOPATH/src/github.com/oauth2-proxy/oauth2-proxy
 COPY go.mod go.sum ./
 RUN go mod download
 
+
 # Now pull in our code
 COPY . .
 
@@ -22,6 +23,10 @@ COPY . .
 ARG VERSION
 ARG TARGETPLATFORM
 ARG BUILDPLATFORM
+
+# # Climate OIDC settings
+# ARG CLIENT_ID
+# ARG CLIENT_SECRET
 
 # Build binary and make sure there is at least an empty key file.
 #  This is useful for GCP App Engine custom runtime builds, because
@@ -48,7 +53,23 @@ COPY nsswitch.conf /etc/nsswitch.conf
 COPY --from=builder /go/src/github.com/oauth2-proxy/oauth2-proxy/oauth2-proxy /bin/oauth2-proxy
 COPY --from=builder /go/src/github.com/oauth2-proxy/oauth2-proxy/jwt_signing_key.pem /etc/ssl/private/jwt_signing_key.pem
 
+
+# Climate OIDC settings
+ARG CLIENT_ID
+ARG CLIENT_SECRET
+COPY oauth2-proxy.cfg ./
+COPY oauth2-proxy-alpha-config.yaml ./
+
+
+RUN sed -i "s/\bclient-id\b/$CLIENT_ID/g"  ./oauth2-proxy-alpha-config.yaml
+RUN sed -i "s/\bclient-secret\b/$CLIENT_SECRET/g"  ./oauth2-proxy-alpha-config.yaml
+
+
 # UID/GID 65532 is also known as nonroot user in distroless image
 USER 65532:65532
 
+EXPOSE 4180
+
 ENTRYPOINT ["/bin/oauth2-proxy"]
+
+CMD ["--alpha-config=oauth2-proxy-alpha-config.yaml", "--config=oauth2-proxy.cfg"]

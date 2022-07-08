@@ -1,0 +1,60 @@
+{
+  "accounts": [
+    {
+      "name": "Non-Prod",
+      "path": "vault:///secret/c7-climate-partners/np/app/spectrum/common"
+    },
+    {
+      "name": "Prod",
+      "path": "vault:///secret/galaxy-questers/prod/app/spectrum/common"
+    }
+  ],
+  "ProjectName": "climate-oauth2-proxy",
+  "Port": 4180,
+  "CMDB": "",
+  "FargateRegion": "us-east-1",
+  "HealthCheckPath": "/ping",
+  "HealthCheckIntervalSeconds": 60,
+  "InstanceCount": 2,
+  "CpuAllocation": "1024",
+  "MemoryAllocation": "2GB",
+  "BaseDomain": "internal.monsanto.net",
+  "TaskExecutionRoleName": "",
+  "faste": {
+    "entry": "",
+    "assets": []
+  },
+  "EnvironmentVariables": {
+    "development": {
+    },
+    "production": {
+    }
+  },
+  "DockerArgs": {
+    "development": {
+      "CLIENT_ID": "vault:///secret/c7-climate-partners/np/oauth2-proxy/oauthclient.clientid",
+      "CLIENT_SECRET": "vault:///secret/c7-climate-partners/np/oauth2-proxy/oauthclient.clientsecret"
+    },
+    "production": {}
+  },
+  "ProjectVariables": {
+    "development": {
+      "build": {
+        "cloudformation_notification_sns_topic": "arn:aws:sns:us-east-1:526148188585:c7-alerts-to-slack"
+      },
+      "monitoring": {
+        "datadog": true,
+        "api_error_threshold": ".01"
+      }
+    },
+    "production": {
+      "build": {
+        "cloudformation_notification_sns_topic": "arn:aws:sns:us-east-1:662922270569:c7-alerts-to-slack"
+      },
+      "monitoring": {
+        "datadog": true,
+        "api_error_threshold": ".01"
+      }
+    }
+  }
+}

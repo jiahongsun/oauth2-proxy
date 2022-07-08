@@ -1,0 +1,35 @@
+injectRequestHeaders:
+  - name: Authorization
+    values:
+      - claim: access_token
+        prefix: 'Bearer '
+providers:
+  - clientID: client-id
+    clientSecret: client-secret
+    id: Climate OIDC Provider
+    loginURL: https://climate.com/static/app-login/
+    name: Climate OIDC Provider
+    oidcConfig:
+      insecureAllowUnverifiedEmail: true
+      insecureSkipNonce: true
+      issuerURL: https://login.climate.com/oauth2/token
+      jwksURL: https://api.climate.com/api/oauth/jwks
+      skipDiscovery: true
+      emailClaim: email
+      userIDClaim: email
+      audienceClaims:
+      - aud
+      extraAudiences:
+      - platform.climate.com
+    profileURL: https://api.climate.com/api/oidc/userinfo
+    provider: oidc
+    redeemURL: https://api.climate.com/api/oauth/token
+    scope: openid email profile user
+server:
+  BindAddress: "0.0.0.0:4180"
+upstreamConfig:
+  upstreams:
+    - uri: https://api.na.fieldview.com
+      id: /
+      path: /
+      passHostHeader: false
